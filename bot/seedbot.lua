@@ -2,19 +2,6 @@ package.path = package.path .. ';.luarocks/share/lua/5.2/?.lua'
   ..';.luarocks/share/lua/5.2/?/init.lua'
 package.cpath = package.cpath .. ';.luarocks/lib/lua/5.2/?.so'
 
-require("./bot/utils")
-
-VERSION = '1.0'
-
--- This function is called when tg receive a msg
-function on_msg_receive (msg)
-  if not started then
-    return
-  end
-
-  local receiver = get_receiver(msg)
-  print (receiver)
-
   -- vardump(msg)
   msg = pre_process_service_msg(msg)
   if msg_valid(msg) then
@@ -30,29 +17,6 @@ function ok_cb(extra, success, result)
 end
 
 function on_binlog_replay_end()
-  started = true
-  postpone (cron_plugins, false, 60*5.0)
-
-  _config = load_config()
-
-  -- load plugins
-  plugins = {}
-  load_plugins()
-end
-
-function msg_valid(msg)
-  -- Don't process outgoing messages
-  if msg.out then
-    print('\27[36mNot valid: msg from us\27[39m')
-    return false
-  end
-
-  -- Before bot was started
-  if msg.date < now then
-    print('\27[36mNot valid: old msg\27[39m')
-    return false
-  end
-
   if msg.unread == 0 then
     print('\27[36mNot valid: readed\27[39m')
     return false
